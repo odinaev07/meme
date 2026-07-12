@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Твиттер-Цитатник Wilinfeels</title>
-    <!-- Подключаем библиотеку Inter для чистого шрифта, как в твите -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <title>Твиттер-Цитатник Furqat</title>
+    <!-- Подключаем библиотеку Inter для чистого шрифта -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * { box-sizing: border-box; }
-        
         body { 
-            /* Системные шрифты используются в CSS, как в X/Twitter */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             display: flex; 
             padding: 40px; 
             gap: 50px; 
@@ -20,7 +18,7 @@
             color: #fff; 
             margin: 0;
             min-height: 100vh;
-            align-items: center; 
+            align-items: center; /* Центрируем весь контент на странице */
             justify-content: center;
         }
         
@@ -32,9 +30,9 @@
             gap: 15px; 
             max-width: 400px;
         }
-        h2 { margin-top: 0; font-weight: 700; font-size: 20px; color: #E7E9EA; }
+        h2 { margin-top: 0; font-weight: 500; font-size: 20px; color: #aaa; }
         textarea { 
-            height: 200px; 
+            height: 150px; 
             padding: 15px; 
             font-size: 16px; 
             border-radius: 8px; 
@@ -43,12 +41,11 @@
             border: 1px solid #444; 
             resize: vertical;
             line-height: 1.4;
-            font-family: inherit;
         }
         button { 
             padding: 15px 20px; 
             font-size: 16px; 
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer; 
             background: #1d9bf0; 
             color: white; 
@@ -67,27 +64,23 @@
             align-items: center; 
         }
 
-        /* КОНТЕЙНЕР ДЛЯ СКРИНШОТА (Пропорции 3:4) */
+        /* КОНТЕЙНЕР ДЛЯ СКРИНШОТА (Пропорции 3:4 для 1920x2560) */
         #capture-area {
-            /* Базовый размер. При рендере увеличится в 3.2 раза до 1920x2560 */
-            width: 600px; 
-            height: 800px; 
+            width: 600px; /* Базовая ширина */
+            height: 800px; /* Базовая высота */
             background-color: #000000;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Идеальное центрирование по вертикали */
-            align-items: flex-start; /* Контент прижат к левому краю отступа */
-            padding: 0 45px; /* Идентичные боковые отступы (как на оригинале) */
+            justify-content: center; /* Центрируем контент по вертикали */
+            align-items: flex-start; /* Прижимаем к левому краю */
+            padding: 0 5px; /* Боковые отступы как на оригинале */
             position: relative;
-            border-radius: 12px;
+           
             overflow: hidden;
-            border: 1px solid #333;
-            /* Сглаживание шрифтов для скриншота */
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            border: 1px solid #333; /* Контур для визуального удобства на сайте */
         }
 
-        /* Обертка самого твита */
+        /* Обертка для твита, чтобы он занимал всю ширину и выравнивался влево */
         .tweet-box {
             width: 100%;
             display: flex;
@@ -98,7 +91,8 @@
         .tweet-header {
             display: flex;
             align-items: center;
-            margin-bottom: 16px; /* Отступ до текста */
+            gap: 12px;
+            margin-bottom: 18px; 
         }
 
         /* Аватарка (круг) */
@@ -111,45 +105,25 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-right: 12px;
         }
-        
-        .avatar-initial {
-            width: 100%;
-            height: 100%;
-            background-color: #FF7043;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        /* Раскомментируй и используй это, если есть картинка
         .avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        */
 
         /* Имя и никнейм */
         .user-details {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-        }
-        .name-row {
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            gap: 2px;
         }
         .user-name {
             font-weight: 700;
-            font-size: 16px;
-            color: #E7E9EA;
-            line-height: 20px;
+            font-size: 17px; 
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         .verified-badge {
             width: 18px;
@@ -157,30 +131,25 @@
             fill: #1d9bf0;
         }
         .user-handle {
-            color: #71767B;
-            font-size: 15px;
-            line-height: 20px;
+            color: #71767b;
+            font-size: 15px; 
         }
 
         /* Основной текст твита */
         .tweet-text { 
-            color: #E7E9EA;
-            font-size: 23px; 
-            line-height: 28px;
-            font-weight: 400;
+            font-size: 23px; /* Вернул крупный размер, как на скриншотах */
             word-wrap: break-word; 
-            white-space: pre-wrap;
-            text-align: left; /* Строгое выравнивание текста по левому краю */
+            line-height: 1.4;
+            white-space: pre-wrap; /* Поддержка абзацев и переносов строк */
+            text-align: left; /* Строго влево */
         }
     </style>
 </head>
 <body>
 
     <div class="editor">
-        <h2>Редактор Твита</h2>
-        <!-- Текст по умолчанию -->
-        <textarea id="textInput" placeholder="Что происходит?">I'm a lover girl. I want to be so drowned in real, genuine love. I love romance, I love clinginess, I love intimacy, I love being affectionate, I love dates, I love the flowers. I want it all. I don't want anything mediocre or surface level.
-That is not for me!</textarea>
+        <h2>Редактор</h2>
+        <textarea id="textInput" placeholder="Напиши что-нибудь...">Fresh outta church ready to FCK</textarea>
         <button onclick="takeScreenshot()">Скачать скриншот (1920x2560)</button>
     </div>
 
@@ -189,23 +158,18 @@ That is not for me!</textarea>
             <div class="tweet-box">
                 <div class="tweet-header">
                     <div class="avatar">
-                        <!-- Заглушка аватара, если нет файла картинки -->
-                        <div class="avatar-initial">W</div>
-                        <!-- Если у тебя есть файл avatar.jpg, удали строку выше и раскомментируй нижнюю -->
-                        <!-- <img src="avatar.jpg" alt="Profile"> -->
+                        <!-- Замени ссылку на свою реальную картинку -->
+                        <img id="avatarImage" src="avatar.jpg" alt="Furqat">
                     </div>
                     <div class="user-details">
-                        <div class="name-row">
-                            <div class="user-name">Wilinfeels</div>
-                            <!-- Оригинальная галочка верификации X/Twitter -->
-                            <svg class="verified-badge" viewBox="0 0 24 24" aria-hidden="true"><g><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.918-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.337 2.25c-.416-.165-.866-.25-1.336-.25-2.21 0-3.918 1.792-3.918 3.998 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.46.74 2.746 1.867 3.5-.06.27-.093.55-.093.84 0 2.21 1.71 3.998 3.918 3.998.47 0 .92-.084 1.336-.25C9.182 21.585 10.49 22.5 12 22.5s2.816-.917 3.337-2.25c.416.165.866.25 1.336.25 2.21 0 3.918-1.792 3.918-3.998 0-.29-.033-.57-.093-.84 1.127-.754 1.867-2.04 1.867-3.5zm-10.46 4.38L7.5 12.333l2.062-1.95 2.378 2.247 5.76-6.42 2.16 1.84-8.02 8.83z"></path></g></svg>
+                        <div class="user-name">
+                            Furqat
+                            <svg viewBox="0 0 22 22" class="verified-badge"><g><path d="M20.396 11c0 1.66-.76 3.12-1.97 4.18l.71 1.2c.42.7.2 1.6-.49 2.02-.7.42-1.6.2-2.02-.49l-.71-1.21c-1.06 1.21-2.52 1.97-4.18 1.97s-3.12-.76-4.18-1.97l-.71 1.21c-.42.7-1.32.91-2.02.49-.7-.42-.92-1.32-.49-2.02l.71-1.2C3.36 14.12 2.6 12.66 2.6 11c0-1.66.76-3.12 1.97-4.18l-.71-1.2c-.42-.7-.2-1.6.49-2.02.7-.42 1.6-.2 2.02.49l.71 1.21C8.16 3.36 9.62 2.6 11.28 2.6s3.12.76 4.18 1.97l.71-1.21c.42-.7 1.32-.91 2.02-.49.7.42.92 1.32.49 2.02l-.71 1.2c1.21 1.06 1.97 2.52 1.97 4.18zm-5.83-2.01L12.3 11.26l-1.04-.98c-.5-.46-1.27-.44-1.74.06-.46.5-.44 1.27.06 1.74l1.88 1.78c.22.21.5.31.79.31.29 0 .58-.11.8-.32l2.67-2.67c.5-.5.5-1.3 0-1.8-.5-.5-1.3-.5-1.8 0z"></path></g></svg>
                         </div>
-                        <div class="user-handle">@wilinfeels</div>
+                        <div class="user-handle">@odiesmood</div>
                     </div>
                 </div>
-                <!-- Контейнер для текста с содержимым по умолчанию -->
-                <div class="tweet-text" id="textOutput">I'm a lover girl. I want to be so drowned in real, genuine love. I love romance, I love clinginess, I love intimacy, I love being affectionate, I love dates, I love the flowers. I want it all. I don't want anything mediocre or surface level.
-That is not for me!</div>
+                <div class="tweet-text" id="textOutput">Fresh outta church ready to FCK</div>
             </div>
         </div>
     </div>
@@ -214,20 +178,21 @@ That is not for me!</div>
         const input = document.getElementById('textInput');
         const output = document.getElementById('textOutput');
 
-        // Динамическое обновление текста при вводе
+        if (input.value) {
+            output.textContent = input.value;
+        }
+
         input.addEventListener('input', function() {
             output.textContent = this.value || 'Текст будет здесь...';
         });
 
-        // Генерация скриншота
         function takeScreenshot() {
             const element = document.getElementById('capture-area');
-            
-            // scale: 3.2 превращает блок 600x800 в картинку 1920x2560
+            // scale: 3.2 делает из 600x800 ровно 1920x2560
             html2canvas(element, { 
                 scale: 3.2, 
                 backgroundColor: "#000000",
-                useCORS: true // Позволяет загружать аватарки из других источников
+                useCORS: true 
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'tweet-1920x2560.png';
