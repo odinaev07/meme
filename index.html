@@ -11,7 +11,7 @@
         * { box-sizing: border-box; }
         
         body { 
-            /* Системные шрифты используются в CSS, как в X/Twitter, Inter как фоллбэк */
+            /* Системные шрифты используются в CSS, как в X/Twitter */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             display: flex; 
             padding: 40px; 
@@ -69,19 +69,19 @@
 
         /* КОНТЕЙНЕР ДЛЯ СКРИНШОТА (Пропорции 3:4) */
         #capture-area {
-            /* Базовый размер для экрана. При рендере увеличится в 3.2 раза до 1920x2560 */
+            /* Базовый размер. При рендере увеличится в 3.2 раза до 1920x2560 */
             width: 600px; 
             height: 800px; 
             background-color: #000000;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Изменено: Выравнивание по верхнему краю, чтобы текст не обрезался */
-            align-items: flex-start; /* Изменено: Выравнивание по левому краю */
-            padding: 40px;
+            justify-content: center; /* Идеальное центрирование по вертикали */
+            align-items: flex-start; /* Контент прижат к левому краю отступа */
+            padding: 0 45px; /* Идентичные боковые отступы (как на оригинале) */
             position: relative;
             border-radius: 12px;
             overflow: hidden;
-            border: 1px solid #333; /* Добавлено: Контур, как на скриншоте image_abe04d.png */
+            border: 1px solid #333;
             /* Сглаживание шрифтов для скриншота */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -90,13 +90,15 @@
         /* Обертка самого твита */
         .tweet-box {
             width: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Заголовок профиля */
         .tweet-header {
             display: flex;
             align-items: center;
-            margin-bottom: 16px; 
+            margin-bottom: 16px; /* Отступ до текста */
         }
 
         /* Аватарка (круг) */
@@ -111,11 +113,11 @@
             align-items: center;
             margin-right: 12px;
         }
-        /* Упрощенный аватар: первая буква на цветном фоне */
+        
         .avatar-initial {
             width: 100%;
             height: 100%;
-            background-color: #FF7043; /* Цвет фона аватара */
+            background-color: #FF7043;
             color: white;
             display: flex;
             align-items: center;
@@ -123,6 +125,14 @@
             font-size: 20px;
             font-weight: bold;
         }
+        
+        /* Раскомментируй и используй это, если есть картинка
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        */
 
         /* Имя и никнейм */
         .user-details {
@@ -155,11 +165,12 @@
         /* Основной текст твита */
         .tweet-text { 
             color: #E7E9EA;
-            font-size: 23px; /* Крупный размер для детального просмотра твита */
+            font-size: 23px; 
             line-height: 28px;
             font-weight: 400;
             word-wrap: break-word; 
-            white-space: pre-wrap; /* Сохраняет переносы строк (Enter) */
+            white-space: pre-wrap;
+            text-align: left; /* Строгое выравнивание текста по левому краю */
         }
     </style>
 </head>
@@ -167,7 +178,7 @@
 
     <div class="editor">
         <h2>Редактор Твита</h2>
-        <!-- Текст по умолчанию из примера, как на скриншоте -->
+        <!-- Текст по умолчанию -->
         <textarea id="textInput" placeholder="Что происходит?">I'm a lover girl. I want to be so drowned in real, genuine love. I love romance, I love clinginess, I love intimacy, I love being affectionate, I love dates, I love the flowers. I want it all. I don't want anything mediocre or surface level.
 That is not for me!</textarea>
         <button onclick="takeScreenshot()">Скачать скриншот (1920x2560)</button>
@@ -178,8 +189,10 @@ That is not for me!</textarea>
             <div class="tweet-box">
                 <div class="tweet-header">
                     <div class="avatar">
-                        <!-- Заменитель аватара: буква 'W' на цветном фоне -->
+                        <!-- Заглушка аватара, если нет файла картинки -->
                         <div class="avatar-initial">W</div>
+                        <!-- Если у тебя есть файл avatar.jpg, удали строку выше и раскомментируй нижнюю -->
+                        <!-- <img src="avatar.jpg" alt="Profile"> -->
                     </div>
                     <div class="user-details">
                         <div class="name-row">
@@ -190,8 +203,9 @@ That is not for me!</textarea>
                         <div class="user-handle">@wilinfeels</div>
                     </div>
                 </div>
-                <!-- Контейнер для текста -->
-                <div class="tweet-text" id="textOutput"></div>
+                <!-- Контейнер для текста с содержимым по умолчанию -->
+                <div class="tweet-text" id="textOutput">I'm a lover girl. I want to be so drowned in real, genuine love. I love romance, I love clinginess, I love intimacy, I love being affectionate, I love dates, I love the flowers. I want it all. I don't want anything mediocre or surface level.
+That is not for me!</div>
             </div>
         </div>
     </div>
@@ -199,11 +213,6 @@ That is not for me!</textarea>
     <script>
         const input = document.getElementById('textInput');
         const output = document.getElementById('textOutput');
-
-        // Инициализация при загрузке: передача текста из textarea в preview
-        if (input.value) {
-            output.textContent = input.value;
-        }
 
         // Динамическое обновление текста при вводе
         input.addEventListener('input', function() {
@@ -218,7 +227,7 @@ That is not for me!</textarea>
             html2canvas(element, { 
                 scale: 3.2, 
                 backgroundColor: "#000000",
-                useCORS: true // Позволяет загружать аватарки из других источников, если понадобится
+                useCORS: true // Позволяет загружать аватарки из других источников
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'tweet-1920x2560.png';
