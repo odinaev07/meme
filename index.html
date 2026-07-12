@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Твиттер-Цитатник</title>
-    <!-- Подключаем системные шрифты через Inter для надежности -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Твиттер-Цитатник Wilinfeels</title>
+    <!-- Подключаем библиотеку Inter для чистого шрифта, как в твите -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * { box-sizing: border-box; }
+        
         body { 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            /* Системные шрифты используются в CSS, как в X/Twitter, Inter как фоллбэк */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             display: flex; 
             padding: 40px; 
             gap: 50px; 
@@ -30,9 +32,9 @@
             gap: 15px; 
             max-width: 400px;
         }
-        h2 { margin-top: 0; font-weight: 500; font-size: 20px; color: #aaa; }
+        h2 { margin-top: 0; font-weight: 700; font-size: 20px; color: #E7E9EA; }
         textarea { 
-            height: 150px; 
+            height: 200px; 
             padding: 15px; 
             font-size: 16px; 
             border-radius: 8px; 
@@ -41,11 +43,12 @@
             border: 1px solid #444; 
             resize: vertical;
             line-height: 1.4;
+            font-family: inherit;
         }
         button { 
             padding: 15px 20px; 
             font-size: 16px; 
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer; 
             background: #1d9bf0; 
             color: white; 
@@ -56,113 +59,116 @@
         }
         button:hover { background: #1a8cd8; }
 
-        /* ПРАВАЯ СТОРОНА: Контейнер для предпросмотра */
+        /* ПРАВАЯ СТОРОНА: Превью */
         .preview-container { 
-            /* Ограничиваем размер превью, чтобы 1920x2560 не разорвал экран */
-            width: 480px; 
-            height: 640px;
+            flex: 1; 
             display: flex; 
             justify-content: center; 
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-            border-radius: 12px;
-            border: 1px solid #333;
+            align-items: center; 
         }
 
-        /* ТОТ САМЫЙ ХОЛСТ 1920x2560 */
+        /* КОНТЕЙНЕР ДЛЯ СКРИНШОТА (Пропорции 3:4) */
         #capture-area {
-            width: 1920px;
-            height: 2560px;
-            background-color: #000000; /* Оригинальный черный фон X */
-            display: flex;
-            align-items: center; /* Центрирование по вертикали */
-            justify-content: center; /* Центрирование по горизонтали */
-            position: absolute;
-            
-            /* Масштабируем до 25% для отображения на сайте (1920 * 0.25 = 480px) */
-            transform-origin: top left;
-            transform: scale(0.25);
-        }
-
-        /* Контейнер самого твита (чтобы текст не растягивался на все 1920px) */
-        .tweet-box {
-            width: 1600px; 
+            /* Базовый размер для экрана. При рендере увеличится в 3.2 раза до 1920x2560 */
+            width: 600px; 
+            height: 800px; 
+            background-color: #000000;
             display: flex;
             flex-direction: column;
-            padding: 0 20px;
+            justify-content: flex-start; /* Изменено: Выравнивание по верхнему краю, чтобы текст не обрезался */
+            align-items: flex-start; /* Изменено: Выравнивание по левому краю */
+            padding: 40px;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #333; /* Добавлено: Контур, как на скриншоте image_abe04d.png */
+            /* Сглаживание шрифтов для скриншота */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* ВСЕ РАЗМЕРЫ УВЕЛИЧЕНЫ В ~4 РАЗА ДЛЯ СОХРАНЕНИЯ ПРОПОРЦИЙ */
-        
+        /* Обертка самого твита */
+        .tweet-box {
+            width: 100%;
+        }
+
+        /* Заголовок профиля */
         .tweet-header {
             display: flex;
             align-items: center;
-            margin-bottom: 64px; /* Увеличенный отступ */
+            margin-bottom: 16px; 
         }
 
-        /* Аватарка */
+        /* Аватарка (круг) */
         .avatar {
-            width: 192px; 
-            height: 192px;
+            width: 48px; 
+            height: 48px;
             border-radius: 50%;
-            margin-right: 48px;
-            overflow: hidden;
             background-color: #333;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
+            margin-right: 12px;
         }
-        .avatar img {
+        /* Упрощенный аватар: первая буква на цветном фоне */
+        .avatar-initial {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            background-color: #FF7043; /* Цвет фона аватара */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
         }
 
         /* Имя и никнейм */
         .user-details {
             display: flex;
             flex-direction: column;
-            gap: 8px;
             justify-content: center;
         }
-        
-        .user-name {
-            font-weight: 700;
-            font-size: 64px; /* Увеличенный шрифт имени */
-            color: #E7E9EA;
+        .name-row {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 4px;
         }
-        
+        .user-name {
+            font-weight: 700;
+            font-size: 16px;
+            color: #E7E9EA;
+            line-height: 20px;
+        }
         .verified-badge {
-            width: 72px;
-            height: 72px;
+            width: 18px;
+            height: 18px;
             fill: #1d9bf0;
         }
-        
         .user-handle {
             color: #71767B;
-            font-size: 60px; /* Увеличенный шрифт никнейма */
-            font-weight: 400;
+            font-size: 15px;
+            line-height: 20px;
         }
 
         /* Основной текст твита */
         .tweet-text { 
-            font-size: 92px; /* 23px * 4 = Увеличенный размер текста */
             color: #E7E9EA;
+            font-size: 23px; /* Крупный размер для детального просмотра твита */
+            line-height: 28px;
             font-weight: 400;
             word-wrap: break-word; 
-            line-height: 1.3;
+            white-space: pre-wrap; /* Сохраняет переносы строк (Enter) */
         }
     </style>
 </head>
 <body>
 
     <div class="editor">
-        <h2>Редактор</h2>
-        <textarea id="textInput" placeholder="Напиши что-нибудь...">I'm a lover girl. I want to be so drowned in real, genuine love. I love romance, I love clinginess, I love intimacy, I love being affectionate, I love dates, I love the flowers. I want it all. I don't want anything mediocre or surface level.
+        <h2>Редактор Твита</h2>
+        <!-- Текст по умолчанию из примера, как на скриншоте -->
+        <textarea id="textInput" placeholder="Что происходит?">I'm a lover girl. I want to be so drowned in real, genuine love. I love romance, I love clinginess, I love intimacy, I love being affectionate, I love dates, I love the flowers. I want it all. I don't want anything mediocre or surface level.
 That is not for me!</textarea>
         <button onclick="takeScreenshot()">Скачать скриншот (1920x2560)</button>
     </div>
@@ -172,19 +178,20 @@ That is not for me!</textarea>
             <div class="tweet-box">
                 <div class="tweet-header">
                     <div class="avatar">
-                        <!-- Замени ссылку на свою реальную картинку -->
-                        <img id="avatarImage" src="avatar.jpg" alt="Wilinfeels">
+                        <!-- Заменитель аватара: буква 'W' на цветном фоне -->
+                        <div class="avatar-initial">W</div>
                     </div>
                     <div class="user-details">
-                        <div class="user-name">
-                            Wilinfeels
-                            <svg viewBox="0 0 24 24" class="verified-badge" aria-hidden="true"><g><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.918-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.337 2.25c-.416-.165-.866-.25-1.336-.25-2.21 0-3.918 1.792-3.918 3.998 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.46.74 2.746 1.867 3.5-.06.27-.093.55-.093.84 0 2.21 1.71 3.998 3.918 3.998.47 0 .92-.084 1.336-.25C9.182 21.585 10.49 22.5 12 22.5s2.816-.917 3.337-2.25c.416.165.866.25 1.336.25 2.21 0 3.918-1.792 3.918-3.998 0-.29-.033-.57-.093-.84 1.127-.754 1.867-2.04 1.867-3.5zm-10.46 4.38L7.5 12.333l2.062-1.95 2.378 2.247 5.76-6.42 2.16 1.84-8.02 8.83z"></path></g></svg>
+                        <div class="name-row">
+                            <div class="user-name">Wilinfeels</div>
+                            <!-- Оригинальная галочка верификации X/Twitter -->
+                            <svg class="verified-badge" viewBox="0 0 24 24" aria-hidden="true"><g><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.918-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.337 2.25c-.416-.165-.866-.25-1.336-.25-2.21 0-3.918 1.792-3.918 3.998 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.46.74 2.746 1.867 3.5-.06.27-.093.55-.093.84 0 2.21 1.71 3.998 3.918 3.998.47 0 .92-.084 1.336-.25C9.182 21.585 10.49 22.5 12 22.5s2.816-.917 3.337-2.25c.416.165.866.25 1.336.25 2.21 0 3.918-1.792 3.918-3.998 0-.29-.033-.57-.093-.84 1.127-.754 1.867-2.04 1.867-3.5zm-10.46 4.38L7.5 12.333l2.062-1.95 2.378 2.247 5.76-6.42 2.16 1.84-8.02 8.83z"></path></g></svg>
                         </div>
                         <div class="user-handle">@wilinfeels</div>
                     </div>
                 </div>
-                <!-- Добавлен тег style="white-space: pre-wrap", чтобы сохранялись переносы строк -->
-                <div class="tweet-text" id="textOutput" style="white-space: pre-wrap;"></div>
+                <!-- Контейнер для текста -->
+                <div class="tweet-text" id="textOutput"></div>
             </div>
         </div>
     </div>
@@ -193,30 +200,25 @@ That is not for me!</textarea>
         const input = document.getElementById('textInput');
         const output = document.getElementById('textOutput');
 
-        // Инициализация текста при загрузке
+        // Инициализация при загрузке: передача текста из textarea в preview
         if (input.value) {
             output.textContent = input.value;
         }
 
-        // Обновление текста при вводе
+        // Динамическое обновление текста при вводе
         input.addEventListener('input', function() {
             output.textContent = this.value || 'Текст будет здесь...';
         });
 
+        // Генерация скриншота
         function takeScreenshot() {
             const element = document.getElementById('capture-area');
             
-            // Настройки html2canvas
+            // scale: 3.2 превращает блок 600x800 в картинку 1920x2560
             html2canvas(element, { 
-                scale: 1, // Оставляем 1, так как размер уже 1920x2560
-                backgroundColor: '#000000',
-                width: 1920,
-                height: 2560,
-                // Используем onclone чтобы снять CSS трансформацию перед скриншотом
-                // Иначе html2canvas может заскринить сжатую версию
-                onclone: function(clonedDoc) {
-                    clonedDoc.getElementById('capture-area').style.transform = 'none';
-                }
+                scale: 3.2, 
+                backgroundColor: "#000000",
+                useCORS: true // Позволяет загружать аватарки из других источников, если понадобится
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'tweet-1920x2560.png';
