@@ -65,20 +65,20 @@
         }
 
         /* КОНТЕЙНЕР ДЛЯ СКРИНШОТА (Пропорции 3:4 для 1920x2560) */
-        #capture-area {
-            width: 600px; /* Базовая ширина */
-            height: 800px; /* Базовая высота */
-            background-color: #000000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Центрируем контент по вертикали */
-            align-items: flex-start; /* Прижимаем к левому краю */
-            padding: 0 10px; /* Боковые отступы как на оригинале */
-            position: relative;
-           
-            overflow: hidden;
-            border: 1px solid #333; /* Контур для визуального удобства на сайте */
-        }
+#capture-area {
+    width: 600px;
+    height: 800px;
+    background-color: #000000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0 35px; /* Вернул 35px для красоты */
+    position: relative;
+    overflow: hidden;
+    /* УБЕРИ border-radius, если хочешь идеальные углы на картинке */
+    border: none; 
+}
 
         /* Обертка для твита, чтобы он занимал всю ширину и выравнивался влево */
         .tweet-box {
