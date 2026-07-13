@@ -186,20 +186,26 @@
             output.textContent = this.value || 'Текст будет здесь...';
         });
 
-        function takeScreenshot() {
-            const element = document.getElementById('capture-area');
-            // scale: 3.2 делает из 600x800 ровно 1920x2560
-            html2canvas(element, { 
-                scale: 3.2, 
-                backgroundColor: "#000000",
-                useCORS: true 
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'tweet-1920x2560.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
+function takeScreenshot() {
+    const element = document.getElementById('capture-area');
+    
+    html2canvas(element, { 
+        scale: 3.2, 
+        backgroundColor: "#000000", // Убеждаемся, что фон черный
+        useCORS: true,
+        logging: false,
+        onclone: (clonedDoc) => {
+            const el = clonedDoc.getElementById('capture-area');
+            el.style.borderRadius = "0px"; // Убираем скругление только для скриншота
+            el.style.border = "none";
         }
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'tweet-1920x2560.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+}
     </script>
 </body>
 </html>
